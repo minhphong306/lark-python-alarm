@@ -5,7 +5,7 @@ from lark_oapi.api.im.v1 import *
 
 from client import client
 
-user_open_ids = ["ou_a79a0f82add14976e3943f4deb17c3fa", "ou_33c76a4cbeb76bd66608706edb32508e"]
+user_open_ids = ["ou_1df9a3dc271bf2f3f51990f8a06f2bf6"]
 
 
 # 获取会话历史消息
@@ -38,8 +38,8 @@ def create_alert_chat() -> str:
     request = CreateChatRequest.builder() \
         .user_id_type("open_id") \
         .request_body(CreateChatRequestBody.builder()
-                      .name("P0: 线上事故处理")
-                      .description("线上紧急事故处理")
+                      .name("P0: Nhóm cảnh báo của tôi")
+                      .description("Mô tả nhóm cảnh báo")
                       .user_id_list(user_open_ids)
                       .build()) \
         .build()
@@ -60,7 +60,7 @@ def send_alert_message(chat_id: str) -> None:
         .request_body(CreateMessageRequestBody.builder()
                       .receive_id(chat_id)
                       .msg_type("interactive")
-                      .content(_build_card("跟进处理"))
+                      .content(_build_card("Theo dõi"))
                       .build()) \
         .build()
 
@@ -130,7 +130,7 @@ def do_p2_im_message_receive_v1(data: P2ImMessageReceiveV1) -> None:
             .request_body(CreateMessageRequestBody.builder()
                           .receive_id(msg.chat_id)
                           .msg_type("text")
-                          .content("{\"text\":\"问题已解决，辛苦了!\"}")
+                          .content("{\"text\":\"Vấn đề đã được giải quyết, cảm ơn!\"}")
                           .build()) \
             .build()
 
@@ -144,9 +144,9 @@ def do_p2_im_message_receive_v1(data: P2ImMessageReceiveV1) -> None:
         chat_info = get_chat_info(msg.chat_id)
         name = chat_info.name
         if name.startswith("[跟进中]"):
-            name = "[已解决]" + name[5:]
-        elif not name.startswith("[已解决]"):
-            name = "[已解决]" + name
+            name = "[Đã giải quyết]" + name[5:]
+        elif not name.startswith("[Đã giải quyết]"):
+            name = "[Đã giải quyết]" + name
 
         # 更新会话名称
         update_chat_name(msg.chat_id, name)
@@ -158,13 +158,13 @@ def do_interactive_card(data: lark.Card) -> Any:
         # 获取会话信息
         chat_info = get_chat_info(data.open_chat_id)
         name = chat_info.name
-        if not name.startswith("[跟进中]") and not name.startswith("[已解决]"):
-            name = "[跟进中] " + name
+        if not name.startswith("[跟进中]") and not name.startswith("[Đã giải quyết]"):
+            name = "[Theo dõi] " + name
 
         # 更新会话名称
         update_chat_name(data.open_chat_id, name)
 
-        return _build_card("跟进中")
+        return _build_card("Theo dõi")
 
 
 # 构建卡片
@@ -178,7 +178,7 @@ def _build_card(button_name: str) -> str:
             "template": "red",
             "title": {
                 "tag": "plain_text",
-                "content": "1 级报警 - 数据平台"
+                "content": "Báo động cấp 1 - Nền tảng dữ liệu"
             }
         },
         "elements": [
@@ -189,35 +189,35 @@ def _build_card(button_name: str) -> str:
                         "is_short": True,
                         "text": {
                             "tag": "lark_md",
-                            "content": "**🕐 时间：**\n2021-02-23 20:17:51"
+                            "content": "**🕐 Thời gian:**\n2021-02-23 20:17:51"
                         }
                     },
                     {
                         "is_short": True,
                         "text": {
                             "tag": "lark_md",
-                            "content": "**🔢 事件 ID：**\n336720"
+                            "content": "**🔢ID sự kiện:**\n336720"
                         }
                     },
                     {
                         "is_short": True,
                         "text": {
                             "tag": "lark_md",
-                            "content": "**📋 项目：**\nQA 7"
+                            "content": "**📋 Dự án:**\nQA 7"
                         }
                     },
                     {
                         "is_short": True,
                         "text": {
                             "tag": "lark_md",
-                            "content": "**👤 一级值班：**\n<at id=all>所有人</at>"
+                            "content": "**👤 Nhân viên trực cấp 1:**\n<at id=all>tất cả mọi người</at>"
                         }
                     },
                     {
                         "is_short": True,
                         "text": {
                             "tag": "lark_md",
-                            "content": "**👤 二级值班：**\n<at id=all>所有人</at>"
+                            "content": "**👤 Nhân viên trực cấp 2:**\n<at id=all>tất cả mọi người</at>"
                         }
                     },
                 ]
@@ -231,7 +231,7 @@ def _build_card(button_name: str) -> str:
                 },
                 "title": {
                     "tag": "lark_md",
-                    "content": "支付方式 支付成功率低于 50%："
+                    "content": "Phương thức thanh toán tỷ lệ thành công dưới 50%:"
                 }
             },
             {
@@ -239,7 +239,7 @@ def _build_card(button_name: str) -> str:
                 "elements": [
                     {
                         "tag": "plain_text",
-                        "content": "🔴 支付失败数  🔵 支付成功数"
+                        "content": "🔴 Số lượng thanh toán thất bại  🔵 Số lượng thanh toán thành công"
                     }
                 ]
             },
@@ -261,34 +261,34 @@ def _build_card(button_name: str) -> str:
                         "tag": "select_static",
                         "placeholder": {
                             "tag": "plain_text",
-                            "content": "暂时屏蔽"
+                            "content": "Tạm thời ẩn"
                         },
                         "options": [
                             {
                                 "text": {
                                     "tag": "plain_text",
-                                    "content": "屏蔽10分钟"
+                                    "content": "Ẩn 10 phút"
                                 },
                                 "value": "1"
                             },
                             {
                                 "text": {
                                     "tag": "plain_text",
-                                    "content": "屏蔽30分钟"
+                                    "content": "Ẩn 30 phút"
                                 },
                                 "value": "2"
                             },
                             {
                                 "text": {
                                     "tag": "plain_text",
-                                    "content": "屏蔽1小时"
+                                    "content": "Ẩn 1 giờ"
                                 },
                                 "value": "3"
                             },
                             {
                                 "text": {
                                     "tag": "plain_text",
-                                    "content": "屏蔽24小时"
+                                    "content": "Ẩn 24 giờ"
                                 },
                                 "value": "4"
                             },
@@ -306,7 +306,7 @@ def _build_card(button_name: str) -> str:
                 "tag": "div",
                 "text": {
                     "tag": "lark_md",
-                    "content": "🙋🏼 [我要反馈误报](https://open.feishu.cn/) | 📝 [录入报警处理过程](https://open.feishu.cn/)"
+                    "content": "🙋🏼 [Tôi muốn phản hồi cảnh báo sai](https://open.feishu.cn/) | 📝 [Ghi nhận quá trình xử lý cảnh báo](https://open.feishu.cn/)"
                 }
             }
         ]
